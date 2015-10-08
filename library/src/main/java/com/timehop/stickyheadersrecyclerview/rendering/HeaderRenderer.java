@@ -74,12 +74,12 @@ public class HeaderRenderer {
             }
             final Resources r = recyclerView.getResources();
             final int px = (int) TypedValue
-                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
 
             if (mOrientationProvider.getOrientation(recyclerView) == OrientationHelper.VERTICAL) {
                 mRect.top = header.getBottom();
                 mRect.left = header.getLeft();
-                mRect.bottom = mRect.top + (int) (px * 0.6f);
+                mRect.bottom = mRect.top + (int) (px * 1.f);
                 mRect.right = header.getRight();
             } else {
                 mRect.top = header.getTop();
@@ -98,7 +98,7 @@ public class HeaderRenderer {
 
         final Resources r = recyclerView.getResources();
         final float px = TypedValue
-            .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+            .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
 
         final boolean isHorizontal = mOrientationProvider.getOrientation(recyclerView)
             == OrientationHelper.HORIZONTAL;
@@ -106,7 +106,7 @@ public class HeaderRenderer {
         final float dx = isHorizontal ? px : 0;
         final float dy = isHorizontal ? 0 : px;
         final LinearGradient lg = new LinearGradient(0, 0, dx, dy, //
-            new int[] {0x80000000, Color.TRANSPARENT},  //
+            new int[] {0x40000000, Color.TRANSPARENT},  //
             new float[] {0, 1}, Shader.TileMode.MIRROR);
         mPaint.setShader(lg);
     }
