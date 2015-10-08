@@ -1,11 +1,17 @@
 package com.timehop.stickyheadersrecyclerview.rendering;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Shader;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
-
 import com.timehop.stickyheadersrecyclerview.calculation.DimensionCalculator;
 import com.timehop.stickyheadersrecyclerview.util.OrientationProvider;
 
@@ -22,6 +28,8 @@ public class HeaderRenderer {
    * allocating new Rect every time we need one.
    */
   private final Rect mTempRect = new Rect();
+  private final Rect mRect;
+  private Paint mPaint;
 
   public HeaderRenderer(OrientationProvider orientationProvider) {
     this(orientationProvider, new DimensionCalculator());
@@ -31,6 +39,7 @@ public class HeaderRenderer {
       DimensionCalculator dimensionCalculator) {
     mOrientationProvider = orientationProvider;
     mDimensionCalculator = dimensionCalculator;
+    mRect = new Rect();
   }
 
   /**
@@ -54,10 +63,53 @@ public class HeaderRenderer {
     canvas.translate(offset.left, offset.top);
 
     header.draw(canvas);
-    canvas.restore();
+
+    if (offset.top == recyclerView.getPaddingTop() && offset.left == recyclerView
+        .getPaddingLeft()) {
+
+        if (mPaint == null) {
+            initPaint(recyclerView);
+        }
+        final Resources r = recyclerView.getResources();
+        final int px = (int) TypedValue
+            .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+
+        if (mOrientationProvider.getOrientation(recyclerView) == OrientationHelper.VERTICAL) {
+            mRect.top = header.getBottom();
+            mRect.left = header.getLeft();
+            mRect.bottom = mRect.top + (int)(px * 0.6f);
+            mRect.right = header.getRight();
+        } else {
+            mRect.top = header.getTop();
+            mRect.left = header.getRight();
+            mRect.bottom = header.getBottom();
+            mRect.right = header.getRight() + px;
+        }
+
+        canvas.drawRect(mRect, mPaint);
+    }
+      canvas.restore();
   }
 
-  /**
+    private void initPaint(RecyclerView recyclerView) {
+        mPaint = new Paint();
+
+        final Resources r = recyclerView.getResources();
+        final float px = TypedValue
+            .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
+
+        final boolean isHorizontal = mOrientationProvider.getOrientation(recyclerView)
+            == OrientationHelper.HORIZONTAL;
+
+        final float dx = isHorizontal ? px : 0;
+        final float dy = isHorizontal ? 0 : px;
+        final LinearGradient lg = new LinearGradient(dx, 0, 0, dy, //
+            new int[] {Color.TRANSPARENT, 0x80000000},  //
+            new float[] {0, 1}, Shader.TileMode.MIRROR);
+        mPaint.setShader(lg);
+    }
+
+    /**
    * Initializes a clipping rect for the header based on the margins of the header and the padding of the
    * recycler.
    * FIXME: Currently right margin in VERTICAL orientation and bottom margin in HORIZONTAL
