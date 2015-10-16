@@ -66,8 +66,7 @@ public class HeaderRenderer {
 
         header.draw(canvas);
 
-        if (offset.top == recyclerView.getPaddingTop() && offset.left == recyclerView
-            .getPaddingLeft()) {
+        if (offset.top == 0 && offset.left == 0) {
 
             if (mPaint == null) {
                 initPaint(recyclerView);
